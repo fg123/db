@@ -1,0 +1,8 @@
+SCHEMA-1
+
+1 = firstName: String
+2 = lastName: String
+3 = password: String
+4 = createDate: Time
+5 = balance: Integer
+6 = items: List<Item>
