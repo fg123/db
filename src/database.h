@@ -5,6 +5,7 @@
 
 #include "global.h"
 #include "object-manager.h"
+#include "commands.h"
 
 class Database {
     fs::path basePath;
@@ -14,6 +15,10 @@ class Database {
 public:
     Database(fs::path path);
     ~Database() {}
-    
+
+    void Query(CommandProcessor& state, const std::string& query);
+
+    // Commands
+    COMMAND_FUNCTION_DECL(List);
 };
 #endif

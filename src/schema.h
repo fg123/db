@@ -38,6 +38,7 @@ struct ListFieldDefinition : FieldDefinition {
 class Schema {
     fs::path path;
     std::unordered_map<FieldID, FieldDefinition*> fields;
+    std::unordered_map<std::string, FieldID> fieldNameLookup;
     std::string name;
 
     void processSchemaV1(std::istream& stream);
@@ -50,6 +51,7 @@ public:
     }
 
     const FieldDefinition* getFieldDefinition(FieldID id) { return fields[id]; }
+    const FieldID getFieldIDForFieldName(const std::string& name) const { return fieldNameLookup.at(name); }
     std::string getName() const { return name; }
 };
 #endif

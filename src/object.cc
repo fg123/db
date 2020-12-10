@@ -19,10 +19,14 @@ Field* Field::construct(FieldType type, const std::string& raw) {
         case FieldType::List:
             return new ListField();
     }
+    throw "Unhandled type!";
+    return nullptr;
 }
 
 Object::Object(ObjectManager& objectManager, const fs::path& path) :
-        objectId(path.filename().string()) {
+        objectId(path.filename().string()),
+        path(path),
+        objectManager(objectManager){
     std::ifstream s(path);
     std::string schemaWord, schemaName;
     s >> schemaWord >> schemaName;
@@ -60,10 +64,32 @@ Object::Object(ObjectManager& objectManager, const fs::path& path) :
     }
 }
 
+Object::~Object() {
+    // Rewrite data into file
+    fs::path tmpPath = path;
+    tmpPath += "~";
+    std::ofstream s(tmpPath);
+    s << "schema " << schema->getName() << std::endl;
+    for (auto& field : fields) {
+        if (schema->getFieldDefinition(field.first)->type == FieldType::List) {
+            ListField* listField = dynamic_cast<ListField*>(field.second);
+            const std::vector<Field*> listItems = listField->getContents();
+            for (auto& item : listItems) {
+                s << field.first << "=" << item->toString() << std::endl;
+            }
+        }
+        else {
+            s << field.first << "=" << field.second->toString() << std::endl;
+        }
+    }
+    // Swap tmpPath from full path
+    fs::rename(tmpPath, path);
+    fs::remove(tmpPath);
+}
+
 std::ostream& operator<<(std::ostream& os, const Object& obj) {
     os << "[" << obj.objectId << ": " << obj.schema->getName() << "]" << std::endl;
     for (auto& it: obj.fields) {
-        // Do stuff
         os << obj.schema->getFieldDefinition(it.first)->name << " = " << it.second->toString() << std::endl; 
     }
     return os;

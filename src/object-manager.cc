@@ -6,7 +6,9 @@ ObjectManager::ObjectManager() {
 }
 
 ObjectManager::~ObjectManager() {
-
+    for (auto& object : objects) {
+        delete object.second;
+    }
 }
 
 void ObjectManager::initialize(fs::path schemaDir, fs::path collectionsDir) {
@@ -21,15 +23,33 @@ void ObjectManager::initialize(fs::path schemaDir, fs::path collectionsDir) {
             schemaTable[schemaName] = schema;
         }
     }
-    // Load all objects for now 
+    // Find all objects
     for (auto& dir : fs::directory_iterator(collectionsDir)) {
         if (dir.is_directory()) {
+            collections[dir.path().filename().string()];
             for (auto& objPath : fs::directory_iterator(dir)) {
-                const std::string id = objPath.path().filename().string();
-                objects[id] = new Object(*this, objPath.path());
-                std::cout << *objects[id] << std::endl;
+                const ObjectID id = objPath.path().filename().string();
+                // Ignore Temporary files created from write
+                if (id[id.size() - 1] != '~') {
+                    objectPathLookup[id] = objPath;
+                    collections[dir.path().filename().string()].insert(id);
+                    /* objects[id] = new Object(*this, objPath.path());
+                    std::cout << *objects[id] << std::endl; */
+                }
             }
         }
     }
-    std::cout << "Loaded " << objects.size() << " objects." << std::endl;
+    std::cout << "Found " << objectPathLookup.size() << " objects." << std::endl;
+}
+
+Object* ObjectManager::getObject(const ObjectID& id) {
+    if (objects.find(id) == objects.end()) {
+        // Load in object from disk
+        if (objectPathLookup.find(id) == objectPathLookup.end()) {
+            // Object ID doesn't exist to our knowledge...
+            return nullptr;
+        }
+        objects[id] = new Object(*this, objectPathLookup[id]);
+    }
+    return objects[id];
 }

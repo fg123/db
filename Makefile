@@ -5,7 +5,7 @@ OBJ = $(SRC:%.cc=%.o)
 HEADERS = $(shell find src/ -name "*.h")
 CPPFLAGS += -I $(SRC_DIR) 
 CFLAGS += -g -std=c++17 -Wall -fmax-errors=5 -lstdc++fs
-LDLIBS = -lstdc++fs
+LDLIBS = -lstdc++fs -lreadline
 
 all: main
 

@@ -76,6 +76,7 @@ void Schema::processSchemaV1(std::istream& stream) {
                 const std::string fieldName = parts_match[2].str();
                 const std::string fieldTypeStr = parts_match[3].str();
                 fields[id] = FieldDefinitionFromString(fieldName, fieldTypeStr);
+                fieldNameLookup[fieldName] = id;
             }
         }
     }
