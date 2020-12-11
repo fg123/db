@@ -90,7 +90,7 @@ Object::~Object() {
 std::ostream& operator<<(std::ostream& os, const Object& obj) {
     os << "[" << obj.objectId << ": " << obj.schema->getName() << "]" << std::endl;
     for (auto& it: obj.fields) {
-        os << obj.schema->getFieldDefinition(it.first)->name << " = " << it.second->toString() << std::endl; 
+        os << obj.schema->getFieldDefinition(it.first)->name << " = " << it.second->toDisplayString() << std::endl; 
     }
     return os;
 }

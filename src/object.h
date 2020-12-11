@@ -14,6 +14,7 @@ public:
     virtual std::string toString() = 0;
     static Field* construct(FieldType type, const std::string& raw);
     virtual int Compare(const Field* other) const = 0;
+    virtual std::string toDisplayString() { return toString(); }
 };
 
 class StringField : public Field {
@@ -33,6 +34,7 @@ public:
 class IntegerField : public Field {
     int64_t underlying;
 public:
+    friend class TimeField;
     IntegerField(const std::string& raw) {
         underlying = std::strtoull(raw.c_str(), nullptr, 10);
     }
@@ -101,6 +103,10 @@ public:
 class TimeField : public IntegerField {
 public:
     TimeField(const std::string& raw) : IntegerField(raw) {}
+    virtual std::string toDisplayString() override {
+        time_t t = underlying;
+        return std::string(ctime(&t));
+    }
 };
 
 // Stores a string ID of the pointed-to object

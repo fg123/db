@@ -13,6 +13,8 @@ struct Token {
         PIPE_LEFT,      // <<
         DOT,            // .
         EQUAL_EQUAL,    // ==
+        LEFT_ANGLE,     // <
+        RIGHT_ANGLE,    // >
         LEFT_BRACK,     // [
         RIGHT_BRACK,    // ]
     };

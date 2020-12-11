@@ -70,10 +70,16 @@ bool QueryParser::scanToken(std::istream& input, std::vector<Token>& tokens) {
             if (match(input, '<')) {
                 tokens.emplace_back(Token::Type::PIPE_LEFT, "<<");
             }
+            else {
+                tokens.emplace_back(Token::Type::LEFT_ANGLE, "<");
+            }
             break;
         case '>':
             if (match(input, '>')) {
                 tokens.emplace_back(Token::Type::PIPE_RIGHT, ">>");
+            }
+            else {
+                tokens.emplace_back(Token::Type::RIGHT_ANGLE, ">");
             }
             break;
         case ' ':
@@ -136,6 +142,8 @@ std::ostream& operator<<(std::ostream& os, const Token& obj) {
         case Token::Type::PIPE_LEFT: os << "[PIPE_LEFT]"; break;
         case Token::Type::DOT: os << "[DOT]"; break;
         case Token::Type::EQUAL_EQUAL: os << "[EQUAL_EQUAL]"; break;
+        case Token::Type::LEFT_ANGLE: os << "[LEFT_ANGLE]"; break;
+        case Token::Type::RIGHT_ANGLE: os << "[RIGHT_ANGLE]"; break;
         case Token::Type::LEFT_BRACK: os << "[LEFT_BRACK]"; break;
         case Token::Type::RIGHT_BRACK: os << "[RIGHT_BRACK]"; break;
     }
@@ -181,6 +189,12 @@ FilterExpression* FilterExpression::Parse(const std::vector<Token>& tokens, size
     FilterOperator op;
     if (Match(tokens, i, Token::Type::EQUAL_EQUAL)) {
         op = FilterOperator::EQUAL;
+    }
+    else if (Match(tokens, i, Token::Type::LEFT_ANGLE)) {
+        op = FilterOperator::LESS_THAN;
+    }
+    else if (Match(tokens, i, Token::Type::RIGHT_ANGLE)) {
+        op = FilterOperator::GREATER_THAN;
     }
     else {
         throw "Invalid operator for filter: " + tokens[i].value;
